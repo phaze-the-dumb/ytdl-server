@@ -10,6 +10,10 @@ if(!fs.existsSync('finished'))fs.mkdirSync('finished');
 
 let inProgress = [];
 
+app.all('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+})
+
 app.get('/v/:id', async (req, res) => {
     console.log('Video Request')
 
