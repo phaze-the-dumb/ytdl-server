@@ -45,13 +45,13 @@
 
             <input id="yturl">
 
-            <button onclick="yturl.onchange();">Convert ></button>
+            <button onclick="convert();">Convert ></button>
         </div>
 
         <script>
             let yturl = document.querySelector('#yturl');
 
-            yturl.onchange = () => {
+            let convert = () => {
                 let id = yturl.value.split('https://www.youtube.com/watch?v=').join('').split('https://youtu.be/').join('');
                 yturl.value = window.location.href + 'v/' + id;
             }
