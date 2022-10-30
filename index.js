@@ -20,19 +20,7 @@ app.get('/v/:id', async (req, res) => {
     if(fs.existsSync('finished/'+req.params.id+'.mp4') && !inProgress.find(x => x === req.params.id)){
         console.log('Video Exists In Cache')
         let s = fs.createReadStream('finished/'+req.params.id+'.mp4')
-        let data = ''
-        let length = fs.readFileSync('finished/'+req.params.id+'.mp4').byteLength
-
-        s.on('data', (chunk) => {
-            res.write(chunk);
-
-            data += chunk;
-            console.log(((data.length / length) * 100) + '% Uploaded')
-        });
-
-        s.on('end', () => {
-            res.end();
-        })
+        s.pipe(res);
     } else{
         if(!inProgress.find(x => x === req.params.id)){
             inProgress.push(req.params.id);
@@ -64,19 +52,7 @@ app.get('/v/:id', async (req, res) => {
                         fs.unlinkSync('temp/'+req.params.id+'.mp3');
 
                         let s = fs.createReadStream('finished/'+req.params.id+'.mp4')
-                        let data = ''
-                        let length = fs.readFileSync('finished/'+req.params.id+'.mp4').byteLength
-
-                        s.on('data', (chunk) => {
-                            res.write(chunk);
-
-                            data += chunk;
-                            console.log(((data.length / length) * 100) + '% Uploaded')
-                        });
-
-                        s.on('end', () => {
-                            res.end();
-                        })
+                        s.pipe(res);
                     });
                 });
             });
