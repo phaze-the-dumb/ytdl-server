@@ -37,7 +37,7 @@
 
             yturl.onchange = () => {
                 let id = yturl.value.split('https://www.youtube.com/watch?v=').join('').split('https://youtu.be/').join('');
-                yturl.value = window.location.href + '/v/' + id;
+                yturl.value = window.location.href + 'v/' + id;
             }
         </script>
     </body>
