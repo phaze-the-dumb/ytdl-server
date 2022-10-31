@@ -54,7 +54,7 @@ app.get('/v/:id', async (req, res) => {
                         fs.unlinkSync('temp/'+req.params.id+'.mp3');
 
                         res.header('content-type', 'video/mp4');
-                        res.send(fs.readFileSync('finished/'+req.params.id+'.mp4'));
+                        fs.createReadStream('finished/'+req.params.id+'.mp4').pipe(res);
                     });
                 });
             });
