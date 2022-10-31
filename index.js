@@ -19,8 +19,9 @@ app.get('/v/:id', async (req, res) => {
 
     if(fs.existsSync('finished/'+req.params.id+'.mp4') && !inProgress.find(x => x === req.params.id)){
         console.log('Video Exists In Cache')
-        let s = fs.createReadStream('finished/'+req.params.id+'.mp4')
-        s.pipe(res);
+
+        res.header('content-type', 'video/mp4');
+        res.send(fs.readFileSync('finished/'+req.params.id+'.mp4'));
     } else{
         if(!inProgress.find(x => x === req.params.id)){
             inProgress.push(req.params.id);
@@ -51,8 +52,8 @@ app.get('/v/:id', async (req, res) => {
                         fs.unlinkSync('temp/'+req.params.id+'.mp4');
                         fs.unlinkSync('temp/'+req.params.id+'.mp3');
 
-                        let s = fs.createReadStream('finished/'+req.params.id+'.mp4')
-                        s.pipe(res);
+                        res.header('content-type', 'video/mp4');
+                        res.send(fs.readFileSync('finished/'+req.params.id+'.mp4'));
                     });
                 });
             });
