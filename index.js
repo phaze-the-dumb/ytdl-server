@@ -47,6 +47,7 @@ app.get('/v/:id', async (req, res) => {
                     let cmb = spawn(ffmpeg, [ '-i', 'temp/'+req.params.id+'.mp4', '-i', 'temp/'+req.params.id+'.mp3', '-c:v', 'copy', '-c:a', 'aac', 'finished/'+req.params.id+'.mp4' ]);
 
                     cmb.on('close', () => {
+                        console.log('Finished Combining');
                         inProgress = inProgress.filter(x => x !== req.params.id);
 
                         fs.unlinkSync('temp/'+req.params.id+'.mp4');
