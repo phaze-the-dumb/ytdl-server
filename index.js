@@ -9,6 +9,47 @@ if(!fs.existsSync('temp'))fs.mkdirSync('temp');
 if(!fs.existsSync('finished'))fs.mkdirSync('finished');
 
 let inProgress = [];
+let stream = ( req, res ) => {
+    let path = 'finished/'+req.params.id+'.mp4';
+
+    fs.stat(path, (err, stat) => {
+        if (err !== null && err.code === 'ENOENT') {
+            res.sendStatus(404);
+            return;
+        }
+
+        const fileSize = stat.size
+        const range = req.headers.range
+
+        if (range) {
+
+            const parts = range.replace(/bytes=/, "").split("-");
+
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize-1;
+            
+            const chunksize = (end-start)+1;
+            const file = fs.createReadStream(path, {start, end});
+            const head = {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': 'video/mp4',
+            }
+            
+            res.writeHead(206, head);
+            file.pipe(res);
+        } else {
+            const head = {
+                'Content-Length': fileSize,
+                'Content-Type': 'video/mp4',
+            }
+
+            res.writeHead(200, head);
+            fs.createReadStream(path).pipe(res);
+        }
+    });
+}
 
 app.all('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
@@ -19,9 +60,7 @@ app.get('/v/:id', async (req, res) => {
 
     if(fs.existsSync('finished/'+req.params.id+'.mp4') && !inProgress.find(x => x === req.params.id)){
         console.log('Video Exists In Cache')
-
-        res.header('content-type', 'video/mp4');
-        res.send(fs.readFileSync('finished/'+req.params.id+'.mp4'));
+        stream(req, res);
     } else{
         if(!inProgress.find(x => x === req.params.id)){
             inProgress.push(req.params.id);
@@ -53,8 +92,7 @@ app.get('/v/:id', async (req, res) => {
                         fs.unlinkSync('temp/'+req.params.id+'.mp4');
                         fs.unlinkSync('temp/'+req.params.id+'.mp3');
 
-                        res.header('content-type', 'video/mp4');
-                        fs.createReadStream('finished/'+req.params.id+'.mp4').pipe(res);
+                        stream(req, res);
                     });
                 });
             });
