@@ -1,11 +1,8 @@
-const ytdl = require('ytdl-core');
-const ffmpeg = require('ffmpeg-static');
-const { spawn } = require('child_process');
+const ytdl = require('./ytdl-quick.js');
 const fs = require('fs');
 const express = require('express');
 const app = express();
 
-if(!fs.existsSync('temp'))fs.mkdirSync('temp');
 if(!fs.existsSync('finished'))fs.mkdirSync('finished');
 
 let inProgress = [];
@@ -63,41 +60,9 @@ app.get('/v/:id', async (req, res) => {
         stream(req, res);
     } else{
         if(!inProgress.find(x => x === req.params.id)){
-            inProgress.push(req.params.id);
-
-            console.log('Checking Formats');
-            let formats = await ytdl.getInfo('https://youtube.com/watch?v='+req.params.id);
-            let format = 'highestvideo';
-
-            if(formats.formats.find(x => x.itag === '137'))format = '137';
-            if(formats.formats.find(x => x.itag === '248'))format = '248';
-
-            console.log('Downloading Video');
-
-            // Download Video
-            ytdl('https://youtube.com/watch?v='+req.params.id, { quality: format }).pipe(fs.createWriteStream('temp/'+req.params.id+'.mp4')).on('finish', () => {
-                console.log('Downloading Audio');
-
-                // Download Audio
-                ytdl('https://youtube.com/watch?v='+req.params.id, { quality: 'highestaudio' }).pipe(fs.createWriteStream('temp/'+req.params.id+'.mp3')).on('finish', () => {
-                    console.log('Combining Video & Audio');
-
-                    // Combine Both
-                    let cmb = spawn(ffmpeg, [ '-i', 'temp/'+req.params.id+'.mp4', '-i', 'temp/'+req.params.id+'.mp3', '-c:v', 'copy', '-c:a', 'aac', 'finished/'+req.params.id+'.mp4' ]);
-
-                    cmb.on('close', () => {
-                        console.log('Finished Combining');
-                        inProgress = inProgress.filter(x => x !== req.params.id);
-
-                        fs.unlinkSync('temp/'+req.params.id+'.mp4');
-                        fs.unlinkSync('temp/'+req.params.id+'.mp3');
-
-                        stream(req, res);
-                    });
-                });
-            });
+            new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
         }
     }
 })
 
-app.listen(161);
+app.listen(80);
