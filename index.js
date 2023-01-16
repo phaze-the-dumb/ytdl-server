@@ -60,7 +60,11 @@ app.get('/v/:id', async (req, res) => {
         stream(req, res);
     } else{
         if(!inProgress.find(x => x === req.params.id)){
-            new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
+            let dwn = new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
+
+            dwn.onend = () => {
+                stream(req, res);
+            }
         }
     }
 })
@@ -73,7 +77,11 @@ app.get('/v/:id/vid.mp4', async (req, res) => {
         stream(req, res);
     } else{
         if(!inProgress.find(x => x === req.params.id)){
-            new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
+            let dwn = new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
+
+            dwn.onend = () => {
+                stream(req, res);
+            }
         }
     }
 })

@@ -9,6 +9,7 @@ class Downloader{
     constructor(url, opts = { verbose: false, output: 'out.mkv' }){
         this.opts = opts;
         this.logInterval;
+        this.onend = () => {};
 
         this.tracking = {
             start: Date.now(),
@@ -64,6 +65,7 @@ class Downloader{
 
         ffmpeg.on('close', () => {
             console.log('Done');
+            this.onend();
 
             if(this.opts.verbose){
                 process.stdout.write('\n\n\n\n');
