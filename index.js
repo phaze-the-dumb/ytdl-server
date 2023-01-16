@@ -52,6 +52,7 @@ app.all('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 })
 
+// Doesn't support firefox
 app.get('/v/:id', async (req, res) => {
     console.log('Video Request')
 
@@ -69,6 +70,7 @@ app.get('/v/:id', async (req, res) => {
     }
 })
 
+// Does support firefox
 app.get('/v/:id/vid.mp4', async (req, res) => {
     console.log('Video Request')
 
