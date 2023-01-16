@@ -65,4 +65,17 @@ app.get('/v/:id', async (req, res) => {
     }
 })
 
+app.get('/v/:id/vid.mp4', async (req, res) => {
+    console.log('Video Request')
+
+    if(fs.existsSync('finished/'+req.params.id+'.mp4') && !inProgress.find(x => x === req.params.id)){
+        console.log('Video Exists In Cache')
+        stream(req, res);
+    } else{
+        if(!inProgress.find(x => x === req.params.id)){
+            new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
+        }
+    }
+})
+
 app.listen(80);
