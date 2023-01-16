@@ -52,8 +52,8 @@
             let yturl = document.querySelector('#yturl');
 
             let convert = () => {
-                let id = yturl.value.split('https://www.youtube.com/watch?v=').join('').split('https://youtu.be/').join('');
-                yturl.value = window.location.href + 'v/' + id;
+                let id = yturl.value.split('https://www.youtube.com/watch?v=').join('').split('https://youtu.be/').join('').split('&')[0];
+                yturl.value = window.location.href + 'v/' + id + '/vid.mp4';
             }
         </script>
     </body>
