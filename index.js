@@ -60,13 +60,7 @@ app.get('/v/:id', async (req, res) => {
         console.log('Video Exists In Cache')
         stream(req, res);
     } else{
-        if(!inProgress.find(x => x === req.params.id)){
-            let dwn = new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
-
-            dwn.onend = () => {
-                stream(req, res);
-            }
-        }
+        res.status(404).send('Not Found');
     }
 })
 
@@ -79,9 +73,11 @@ app.get('/v/:id/vid.mp4', async (req, res) => {
         stream(req, res);
     } else{
         if(!inProgress.find(x => x === req.params.id)){
+            inProgress.push(req.params.id);
             let dwn = new ytdl('https://youtube.com/watch?v='+req.params.id, { verbose: true, output: 'finished/'+req.params.id+'.mp4' });
 
             dwn.onend = () => {
+                inProgress = inProgress.filter(x => x !== req.params.id);
                 stream(req, res);
             }
         }
