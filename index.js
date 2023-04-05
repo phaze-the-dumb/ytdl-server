@@ -64,7 +64,7 @@ app.get('/v/:id', async (req, res) => {
     }
 })
 
-// Does support firefox
+// Does support firefox - just realised i never set content-type headers, probably why the original url didn't work in firefox...
 app.get('/v/:id/vid.mp4', async (req, res) => {
     console.log('Video Request')
 
